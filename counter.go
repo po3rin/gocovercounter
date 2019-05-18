@@ -8,9 +8,10 @@ import (
 	"go/token"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"sort"
+
+	"github.com/pkg/errors"
 )
 
 // Block represents the information about a basic block to be recorded in the analysis.
@@ -33,26 +34,24 @@ type File struct {
 	edit    *Buffer
 }
 
-// Annotate insert generated code for coverage and write result to file.
-func Annotate(w io.Writer, name string) {
+// Annotate generates coverage-annotated source.
+func Annotate(w io.Writer, filepath string) error {
 	counterStmt = setCounterStmt
 	// counterStmt = incCounterStmt
 
 	fset := token.NewFileSet()
-	content, err := ioutil.ReadFile(name)
+	content, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		log.Fatalf("cover: %s: %s", name, err)
+		return errors.Wrap(err, "gocovercounter: failed to read file")
 	}
-	parsedFile, err := parser.ParseFile(fset, name, content, parser.ParseComments)
+	parsedFile, err := parser.ParseFile(fset, filepath, content, parser.ParseComments)
 	if err != nil {
-		log.Fatalf("cover: %s: %s", name, err)
+		return errors.Wrap(err, "gocovercounter: failed to parse file")
 	}
-
-	fmt.Printf("add counter in %v\n", name)
 
 	file := &File{
 		fset:    fset,
-		name:    name,
+		name:    filepath,
 		content: content,
 		edit:    NewBuffer(content),
 		astFile: parsedFile,
@@ -70,12 +69,13 @@ func Annotate(w io.Writer, name string) {
 	ast.Walk(file, file.astFile)
 	newContent := file.edit.Bytes()
 
-	fmt.Fprintf(w, "//line %s:1\n", name)
+	fmt.Fprintf(w, "//line %s:1\n", filepath)
 	w.Write(newContent)
 
 	// After printing the source tree, add some declarations for the counters etc.
 	// We could do this by adding to the tree, but it's easier just to print the text.
 	file.addVariables(w)
+	return nil
 }
 
 // Visit implements the ast.Visitor interface.

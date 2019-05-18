@@ -11,13 +11,17 @@ import (
 
 func TestAnnotate(t *testing.T) {
 	w := &bytes.Buffer{}
-	gocovercounter.Annotate(w, "./testdata/testfile.go")
+	err := gocovercounter.Annotate(w, "./testdata/testfile.go")
+	if err != nil {
+		t.Fatalf("got unexpected error: %v\n", err)
+	}
 
 	f, err := os.Open("./testdata/wanttestfile.txt")
 	if err != nil {
 		t.Fatalf("got unexpected error: %v\n", err)
 	}
 	defer f.Close()
+
 	want, err := ioutil.ReadAll(f)
 	if err != nil {
 		t.Fatalf("got unexpected error: %v\n", err)
