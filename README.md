@@ -10,7 +10,7 @@ code is Roughly mirror of golang/go/src/cmd/cover/cover.go.
 use package as CLI.
 
 ```bash
-$ go get -u github.com/po3rin/coco
+$ go get -u github.com/po3rin/gocovercounter/cmd/coco
 $ coco ./testdata/testfile.go
 ```
 
