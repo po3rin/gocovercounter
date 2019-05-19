@@ -14,7 +14,7 @@ $ go get -u github.com/po3rin/coco
 $ coco ./testdata/testfile.go
 ```
 
-this cmd outputs following. this code is coverage-annotated source.
+coco outputs following. this code is coverage-annotated source.
 
 ```go
 //line ./testdata/testfile.go:1
