@@ -1,7 +1,5 @@
 # gocovercounter
 
-in development ...
-
 gocovercounter lets you to generate coverage-annotated source.
 code is Roughly mirror of golang/go/src/cmd/cover/cover.go.
 
